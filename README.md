@@ -37,19 +37,18 @@ The files structure is arranged as below:
 	- README.md: read me file
 	- ETL Pipeline Preparation.ipynb: contains ETL pipeline preparation code
 	- ML Pipeline Preparation.ipynb: contains ML pipeline preparation code
-	- workspace
-		- \app
-			- run.py: flask file to run the app
-		- \templates
-			- master.html: main page of the web application 
-			- go.html: result web page
-		- \data
-			- disaster_categories.csv: categories dataset
-			- disaster_messages.csv: messages dataset
-			- DisasterResponse.db: disaster response database
-			- process_data.py: ETL process
-		- \models
-			- train_classifier.py: classification code
+	- app
+              - run.py: flask file to run the app
+             \-  templates
+	          - master.html: main page of the web application 
+	          - go.html: result web page
+	- data
+	       - disaster_categories.csv: categories dataset
+	       - disaster_messages.csv: messages dataset
+	       - DisasterResponse.db: disaster response database
+	       - process_data.py: ETL process
+	- models
+	       - train_classifier.py: classification code
 
 ## Instructions <a name="instructions"></a>
 
