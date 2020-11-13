@@ -4,6 +4,13 @@ from sqlalchemy import create_engine
 import numpy as np
 
 def load_data(messages_filepath, categories_filepath):
+    '''Load , merge messages , categories datasets
+    Input: messages_filepath: string. Filepath for csv file containing messages dataset.
+    categories_filepath: string. Filepath for csv file containing categories dataset.
+       
+    outputs:
+    df: dataframe. Dataframe containing merged content of messages , categories datasets.
+    '''
     messages = pd.read_csv(messages_filepath)
     categories = pd.read_csv(categories_filepath)
     df = pd.merge(messages, categories)
@@ -12,6 +19,16 @@ def load_data(messages_filepath, categories_filepath):
 
 
 def clean_data(df, df_temp_id):
+    """Clean dataframe by removing duplicates , converting categories from strings 
+    to binary values.
+    
+    Args:
+    df: dataframe. Dataframe containing merged content of messages , categories datasets.
+       
+    Returns:
+    df: dataframe. Dataframe containing cleaned version of input dataframe.
+    """
+    
     
     categories =  df['categories'].str.split(';', expand=True).add_prefix('categories_')
     messages = df[['message', 'genre', 'id']]
@@ -42,11 +59,23 @@ def clean_data(df, df_temp_id):
     
 
 def save_data(df, database_filename):
+    """Save into  SQLite database.
+    
+    inputs:
+    df: dataframe. Dataframe containing cleaned version of merged message and 
+    categories data.
+    database_filename: string. Filename for output database.
+       
+    outputs:
+    None
+    """
     engine = create_engine('sqlite:///' + database_filename)
     df.to_sql('Messages', engine, index=False, if_exists='replace')
 
 
 def main():
+    '''Main program to run the ETL
+    '''
     if len(sys.argv) == 4:
 
         messages_filepath, categories_filepath, database_filepath = sys.argv[1:]
