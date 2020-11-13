@@ -25,6 +25,15 @@ nltk.download('stopwords')
 warnings.simplefilter('ignore')
 
 def load_data(database_filepath):
+    """
+    Load and merge datasets
+    input:
+         database name
+    outputs:
+        X: messages 
+        y: response variable
+        category names. Y column value
+    """
     engine = create_engine('sqlite:///' + database_filepath)
     df = pd.read_sql_table('Messages', engine)
     X = df['message']
@@ -33,6 +42,8 @@ def load_data(database_filepath):
     return X,Y,category_names
 
 def tokenize(text):
+    """ Normalize and tokenize
+    """
     # Converting everything to lower case
     text = re.sub(r"[^a-zA-Z0-9]", " ", text.lower())
     
@@ -49,26 +60,15 @@ def tokenize(text):
 
 
 def build_model(X_train,Y_train):
+    """
+    pipe line construction
+    """
     pipeline = Pipeline([
     ('vect', CountVectorizer(tokenizer = tokenize)),
     ('tfidf', TfidfTransformer()),
     ('clf', MultiOutputClassifier(RandomForestClassifier()))
     ])
-    def perform_metric(Y_T, Y_P):
     
-      f1_list = []
-      for i in range(np.shape(Y_P)[1]):
-         f1 = f1_score(np.array(Y_T)[:, i], Y_P[:, i])
-         f1_list.append(f1)
-         
-      score = np.median(f1_list)
-      return score
-    parameters = {'vect__min_df': [1, 5],
-              'tfidf__use_idf':[True, False],
-              
-              }
-
-    scorer = make_scorer(perform_metric)
     cv = GridSearchCV(pipeline, param_grid = parameters, scoring='f1_micro', n_jobs=-1, verbose = 10)
     cv.fit(X_train, Y_train)
     return cv
@@ -76,16 +76,30 @@ def build_model(X_train,Y_train):
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
+    """
+    inputs
+        model
+        X_test
+        y_test
+        category_names
+    output:
+        scores
+    """
     y_prediction = model.predict(X_test)
     print(classification_report(Y_test.values,y_prediction, target_names=category_names))
 
 def save_model(model, model_filepath):
+    """
+    Save model to a pickle file
+    """
     temp_pickle = open(model_filepath, 'wb')
     pickle.dump(model, temp_pickle)
     temp_pickle.close()
 
 
 def main():
+    '''Main program to run the modeling process
+    '''
     if len(sys.argv) == 3:
         database_filepath, model_filepath = sys.argv[1:]
         print('Loading data...\n    DATABASE: {}'.format(database_filepath))
